@@ -1,7 +1,9 @@
 import { COLS, ROWS } from './constants';
+import { Piece } from './piece';
 
 export class Board {
   grid: number[][];
+  piece: Piece;
 
   // 새 게임이 시작되면 보드를 초기화한다.
   reset(): void {

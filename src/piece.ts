@@ -38,4 +38,10 @@ export class Piece {
       });
     });
   }
+
+  // Move piece in the board!
+  move(p) {
+    this.x = p.x;
+    this.y = p.y;
+  }
 }

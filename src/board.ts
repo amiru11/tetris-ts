@@ -23,11 +23,11 @@ export class Board {
     return this.grid[y] && this.grid[y][x] === 0;
   }
 
-  valid(p) {
-    return p.shape.every((row, dy) => {
+  valid(piece: Piece): boolean {
+    return piece.shape.every((row, dy) => {
       return row.every((value, dx) => {
-        let x = p.x + dx;
-        let y = p.y + dy;
+        let x = piece.x + dx;
+        let y = piece.y + dy;
         return value === 0 || (this.isInsideWalls(x, y) && this.notOccupied(x, y));
       });
     });

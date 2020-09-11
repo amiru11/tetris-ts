@@ -16,14 +16,15 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
 const moves = {
+  [KEY_CODES.SPACE]: (p) => ({ ...p, y: p.y + 1 }),
   [KEY_CODES.LEFT]: (p) => ({ ...p, x: p.x - 1 }),
   [KEY_CODES.RIGHT]: (p) => ({ ...p, x: p.x + 1 }),
-  [KEY_CODES.UP]: (p) => ({ ...p, y: p.y + 1 }),
+  [KEY_CODES.DOWN]: (p) => ({ ...p, y: p.y + 1 }),
 };
 
 let board = new Board();
 
-function play() {
+function play(): void {
   board.reset();
   console.table(board.grid);
   let piece = new Piece(ctx);
@@ -32,26 +33,39 @@ function play() {
   board.piece = piece;
 }
 
+function movePiece(piece: Piece): void {
+  // 이동이 가능한 상태라면 조각을 이동한다.
+  board.piece.move(piece);
+
+  // 그리기 전에 이전 좌표를 지운다.
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  board.piece.draw();
+}
+
 /**
  * EventListner
  */
 playButton.addEventListener('click', play);
 
-document.addEventListener('keydown', (event) => {
+document.addEventListener('keydown', (event: KeyboardEvent) => {
   if (moves[event.keyCode]) {
     // 이벤트 버블링을 막는다.
     event.preventDefault();
 
     // 조각의 새 상태를 얻는다.
-    let p = moves[event.keyCode](board.piece);
+    let piece: Piece = moves[event.keyCode](board.piece);
 
-    if (board.valid(p)) {
-      // 이동이 가능한 상태라면 조각을 이동한다.
-      board.piece.move(p);
+    if (event.keyCode === KEY_CODES.SPACE) {
+      // 하드 드롭한다.
+      while (board.valid(piece)) {
+        movePiece(piece);
+        piece = moves[KEY_CODES.DOWN](board.piece);
+      }
+    }
 
-      // 그리기 전에 이전 좌표를 지운다.
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
+    if (board.valid(piece)) {
+      movePiece(piece);
       board.piece.draw();
     }
   }

@@ -1,6 +1,6 @@
 import { COLS, ROWS, BLOCK_SIZE, KEY_CODES } from './constants';
 import { Board } from './board';
-import { Piece } from './piece';
+import { Piece, IPiece } from './piece';
 
 /**
  * Define DOM Element
@@ -16,17 +16,17 @@ ctx.canvas.height = ROWS * BLOCK_SIZE;
 ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
 
 const moves = {
-  [KEY_CODES.SPACE]: (p) => ({ ...p, y: p.y + 1 }),
-  [KEY_CODES.LEFT]: (p) => ({ ...p, x: p.x - 1 }),
-  [KEY_CODES.RIGHT]: (p) => ({ ...p, x: p.x + 1 }),
-  [KEY_CODES.DOWN]: (p) => ({ ...p, y: p.y + 1 }),
+  [KEY_CODES.SPACE]: (piece: IPiece) => ({ ...piece, y: piece.y + 1 }),
+  [KEY_CODES.UP]: (piece: IPiece) => board.rotate(piece),
+  [KEY_CODES.LEFT]: (piece: IPiece) => ({ ...piece, x: piece.x - 1 }),
+  [KEY_CODES.RIGHT]: (piece: IPiece) => ({ ...piece, x: piece.x + 1 }),
+  [KEY_CODES.DOWN]: (piece: IPiece) => ({ ...piece, y: piece.y + 1 }),
 };
 
 let board = new Board();
 
 function play(): void {
   board.reset();
-  console.table(board.grid);
   let piece = new Piece(ctx);
   piece.draw();
 
@@ -41,6 +41,7 @@ function movePiece(piece: Piece): void {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   board.piece.draw();
+  console.table(board.grid);
 }
 
 /**
@@ -62,11 +63,10 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
         movePiece(piece);
         piece = moves[KEY_CODES.DOWN](board.piece);
       }
-    }
-
-    if (board.valid(piece)) {
-      movePiece(piece);
-      board.piece.draw();
+    } else {
+      if (board.valid(piece)) {
+        movePiece(piece);
+      }
     }
   }
 });

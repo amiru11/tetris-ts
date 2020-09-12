@@ -1,9 +1,20 @@
-export class Piece {
+export interface IPiece {
   x: number;
   y: number;
   color: string;
   shape: number[][];
   ctx: CanvasRenderingContext2D;
+  spawn: () => void;
+  draw: () => void;
+  move: (piece: any) => void;
+}
+
+export class Piece {
+  public x: number;
+  public y: number;
+  public color: string;
+  public shape: number[][];
+  public ctx: CanvasRenderingContext2D;
 
   constructor(ctx) {
     this.ctx = ctx;
@@ -11,7 +22,7 @@ export class Piece {
   }
 
   // Create Piece Object
-  spawn() {
+  spawn(): void {
     this.color = 'blue';
     this.shape = [
       [2, 0, 0],
@@ -25,7 +36,7 @@ export class Piece {
   }
 
   // Draw piece in the board!
-  draw() {
+  public draw(): void {
     this.ctx.fillStyle = this.color;
     this.shape.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -40,8 +51,9 @@ export class Piece {
   }
 
   // Move piece in the board!
-  move(p) {
+  public move(p: Piece): void {
     this.x = p.x;
     this.y = p.y;
+    this.shape = p.shape;
   }
 }

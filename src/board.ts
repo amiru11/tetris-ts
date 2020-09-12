@@ -32,4 +32,18 @@ export class Board {
       });
     });
   }
+
+  rotate(piece: Piece): Piece {
+    let clone = JSON.parse(JSON.stringify(piece));
+    // swap the symmetric elements
+    for (let y = 0; y < clone.shape.length; y++) {
+      for (let x = 0; x < y; ++x) {
+        const temp = clone.shape[y][x];
+        clone.shape[y][x] = clone.shape[x][y];
+        clone.shape[x][y] = temp;
+      }
+    }
+    clone.shape.forEach((row) => row.reverse());
+    return clone;
+  }
 }

@@ -1,4 +1,4 @@
-import { COLS, ROWS, BLOCK_SIZE, KEY_CODES } from './constants';
+import { KEY_CODES } from './constants';
 import { Board } from './board';
 import { Piece, IPiece } from './piece';
 
@@ -9,12 +9,6 @@ const canvas: any = document.getElementById('board');
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
 const playButton: HTMLButtonElement = document.querySelector('.play-button');
 
-// 상수를 사용해 캔버스의 크기를 계산한다.
-ctx.canvas.width = COLS * BLOCK_SIZE;
-ctx.canvas.height = ROWS * BLOCK_SIZE;
-// 블록의 크기를 변경한다.
-ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
-
 const moves = {
   [KEY_CODES.SPACE]: (piece: IPiece) => ({ ...piece, y: piece.y + 1 }),
   [KEY_CODES.UP]: (piece: IPiece) => board.rotate(piece),
@@ -23,14 +17,11 @@ const moves = {
   [KEY_CODES.DOWN]: (piece: IPiece) => ({ ...piece, y: piece.y + 1 }),
 };
 
-let board = new Board();
+let board = new Board(ctx);
 
 function play(): void {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   board.reset();
-  let piece = new Piece(ctx);
-  piece.draw();
-
-  board.piece = piece;
 }
 
 function movePiece(piece: Piece): void {
@@ -41,7 +32,6 @@ function movePiece(piece: Piece): void {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   board.piece.draw();
-  console.table(board.grid);
 }
 
 /**

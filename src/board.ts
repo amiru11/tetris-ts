@@ -1,13 +1,30 @@
-import { COLS, ROWS } from './constants';
+import { BLOCK_SIZE, COLS, ROWS } from './constants';
 import { Piece } from './piece';
 
 export class Board {
   grid: number[][];
   piece: Piece;
+  ctx: CanvasRenderingContext2D;
+
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.init();
+  }
+
+  init() {
+    // Calculate size of canvas from constants.
+    this.ctx.canvas.width = COLS * BLOCK_SIZE;
+    this.ctx.canvas.height = ROWS * BLOCK_SIZE;
+
+    // Scale so we don't need to give size on every draw.
+    this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
+  }
 
   // 새 게임이 시작되면 보드를 초기화한다.
   reset(): void {
     this.grid = this.getEmptyBoard();
+    this.piece = new Piece(this.ctx);
+    this.piece.draw();
   }
 
   // 0으로 채워진 행렬을 얻는다.

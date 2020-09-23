@@ -1,3 +1,4 @@
+import { SHAPES, COLORS } from './constants';
 export interface IPiece {
   x: number;
   y: number;
@@ -7,9 +8,10 @@ export interface IPiece {
   spawn: () => void;
   draw: () => void;
   move: (piece: any) => void;
+  randomrizeType: (typeLength: number) => number;
 }
 
-export class Piece {
+export class Piece implements IPiece {
   public x: number;
   public y: number;
   public color: string;
@@ -23,12 +25,9 @@ export class Piece {
 
   // Create Piece Object
   spawn(): void {
-    this.color = 'blue';
-    this.shape = [
-      [2, 0, 0],
-      [2, 2, 2],
-      [0, 0, 0],
-    ];
+    const typeId = this.randomrizeType(COLORS.length);
+    this.shape = SHAPES[typeId];
+    this.color = COLORS[typeId];
 
     // Starting position.
     this.x = 3;
@@ -55,5 +54,9 @@ export class Piece {
     this.x = p.x;
     this.y = p.y;
     this.shape = p.shape;
+  }
+
+  randomrizeType(typeLength: number): number {
+    return Math.floor(Math.random() * typeLength);
   }
 }

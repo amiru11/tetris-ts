@@ -4,11 +4,13 @@ export interface IPiece {
   y: number;
   color: string;
   shape: number[][];
+  typeId: number;
   ctx: CanvasRenderingContext2D;
   spawn: () => void;
   draw: () => void;
   move: (piece: any) => void;
   randomrizeType: (typeLength: number) => number;
+  setStartingPosition: () => void;
 }
 
 export class Piece implements IPiece {
@@ -17,6 +19,7 @@ export class Piece implements IPiece {
   public color: string;
   public shape: number[][];
   public ctx: CanvasRenderingContext2D;
+  public typeId: number;
 
   constructor(ctx) {
     this.ctx = ctx;
@@ -25,12 +28,12 @@ export class Piece implements IPiece {
 
   // Create Piece Object
   spawn(): void {
-    const typeId = this.randomrizeType(COLORS.length);
-    this.shape = SHAPES[typeId];
-    this.color = COLORS[typeId];
+    this.typeId = this.randomrizeType(COLORS.length - 1);
+    this.shape = SHAPES[this.typeId];
+    this.color = COLORS[this.typeId];
 
     // Starting position.
-    this.x = 3;
+    this.x = 0;
     this.y = 0;
   }
 
@@ -56,7 +59,11 @@ export class Piece implements IPiece {
     this.shape = p.shape;
   }
 
-  randomrizeType(typeLength: number): number {
+  public randomrizeType(typeLength: number): number {
     return Math.floor(Math.random() * typeLength);
+  }
+
+  public setStartingPosition() {
+    this.x = this.typeId === 4 ? 4 : 3;
   }
 }

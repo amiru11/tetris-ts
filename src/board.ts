@@ -1,13 +1,16 @@
-import { BLOCK_SIZE, COLS, ROWS, KEY_CODES } from './constants';
+import { BLOCK_SIZE, COLS, ROWS, KEY_CODES, COLORS } from './constants';
 import { Piece } from './piece';
 
 export class Board {
   grid: number[][];
   piece: Piece;
+  nextPiece: Piece;
   ctx: CanvasRenderingContext2D;
+  ctxNext: CanvasRenderingContext2D;
 
-  constructor(ctx) {
+  constructor(ctx, ctxNext) {
     this.ctx = ctx;
+    this.ctxNext = ctxNext;
     this.init();
   }
 
@@ -24,7 +27,16 @@ export class Board {
   reset(): void {
     this.grid = this.getEmptyBoard();
     this.piece = new Piece(this.ctx);
-    this.piece.draw();
+    this.piece.setStartingPosition();
+    this.getNewPiece();
+  }
+
+  // 새로운 조각을 캔버스에 그려준다.
+  getNewPiece() {
+    const { width, height } = this.ctxNext.canvas;
+    this.nextPiece = new Piece(this.ctxNext);
+    this.ctxNext.clearRect(0, 0, width, height);
+    this.nextPiece.draw();
   }
 
   // 0으로 채워진 행렬을 얻는다.
@@ -41,7 +53,7 @@ export class Board {
     return this.grid[y] && this.grid[y][x] === 0;
   }
 
-  drop(moves: any) {
+  drop(moves: any): boolean {
     let p = moves[KEY_CODES.DOWN](this.piece);
     if (this.valid(p)) {
       // 유효성 검사에 걸리지 않을 때까지 계속 아래로 이동.
@@ -52,8 +64,40 @@ export class Board {
        * 해당 row가 조각으로 꽉차면 라인 클리어해주기
        * 새로운 piece 나오도록 하기
        */
+      this.freeze();
+      this.piece = this.nextPiece;
+      console.log('this.piece', this.piece);
+      this.piece.ctx = this.ctx;
+      this.piece.setStartingPosition();
+      this.getNewPiece();
     }
     return true;
+  }
+
+  freeze() {
+    this.piece.shape.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.grid[y + this.piece.y][x + this.piece.x] = value;
+        }
+      });
+    });
+  }
+
+  drawBoard() {
+    this.grid.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value > 0) {
+          this.ctx.fillStyle = COLORS[value];
+          this.ctx.fillRect(x, y, 1, 1);
+        }
+      });
+    });
+  }
+
+  draw() {
+    this.piece.draw();
+    this.drawBoard();
   }
 
   valid(piece: Piece): boolean {

@@ -1,4 +1,4 @@
-import { KEY_CODES } from './constants';
+import { BLOCK_SIZE, KEY_CODES } from './constants';
 import { Board } from './board';
 import { Piece, IPiece } from './piece';
 
@@ -7,6 +7,8 @@ import { Piece, IPiece } from './piece';
  */
 const canvas: any = document.getElementById('board');
 const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+const canvasNext: any = document.getElementById('next');
+const ctxNext: CanvasRenderingContext2D = canvasNext.getContext('2d');
 const playButton: HTMLButtonElement = document.querySelector('.play-button');
 
 const moves = {
@@ -20,7 +22,7 @@ const moves = {
 let rAFId = null; // requestAnimationFrame id
 let time: { start: number; elapsed: number; level: number } = { start: 0, elapsed: 0, level: 1000 }; // Timer를 위한 객체
 
-let board = new Board(ctx);
+let board = new Board(ctx, ctxNext);
 
 function animate(now: number = 0) {
   // 지난 시간을 업데이트한다.
@@ -37,7 +39,7 @@ function animate(now: number = 0) {
   // 새로운 상태로 그리기 전에 보드를 지운다.
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-  board.piece.draw();
+  board.draw();
   rAFId = requestAnimationFrame(animate);
 }
 
@@ -61,6 +63,16 @@ function movePiece(piece: Piece): void {
 
   board.piece.draw();
 }
+
+function initNext(): void {
+  // Calculate size of canvas from constants.
+  ctxNext.canvas.width = 4 * BLOCK_SIZE;
+  ctxNext.canvas.height = 4 * BLOCK_SIZE;
+  ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
+  console.log('ctxNext', ctxNext);
+}
+
+initNext();
 
 /**
  * EventListner

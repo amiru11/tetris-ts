@@ -1,4 +1,4 @@
-import { BLOCK_SIZE, COLS, ROWS } from './constants';
+import { BLOCK_SIZE, COLS, ROWS, KEY_CODES } from './constants';
 import { Piece } from './piece';
 
 export class Board {
@@ -32,12 +32,28 @@ export class Board {
     return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
   }
 
+  // 테트리스 판 안에 존재하는지 확인
   isInsideWalls(x, y) {
     return x >= 0 && x < COLS && y <= ROWS;
   }
 
   notOccupied(x, y) {
     return this.grid[y] && this.grid[y][x] === 0;
+  }
+
+  drop(moves: any) {
+    let p = moves[KEY_CODES.DOWN](this.piece);
+    if (this.valid(p)) {
+      // 유효성 검사에 걸리지 않을 때까지 계속 아래로 이동.
+      this.piece.move(p);
+    } else {
+      /**
+       * 제일 밑에 도착하면, piece freezing
+       * 해당 row가 조각으로 꽉차면 라인 클리어해주기
+       * 새로운 piece 나오도록 하기
+       */
+    }
+    return true;
   }
 
   valid(piece: Piece): boolean {

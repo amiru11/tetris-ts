@@ -17,11 +17,39 @@ const moves = {
   [KEY_CODES.DOWN]: (piece: IPiece) => ({ ...piece, y: piece.y + 1 }),
 };
 
+let rAFId = null; // requestAnimationFrame id
+let time: { start: number; elapsed: number; level: number } = { start: 0, elapsed: 0, level: 1000 }; // Timer를 위한 객체
+
 let board = new Board(ctx);
+
+function animate(now: number = 0) {
+  // 지난 시간을 업데이트한다.
+  time.elapsed = now - time.start;
+
+  // 지난 시간이 현재 레벨의 시간을 초과했는지 확인한다.
+  if (time.elapsed > time.level) {
+    // 현재 시간을 다시 측정한다.
+    time.start = now;
+
+    board.drop(moves);
+  }
+
+  // 새로운 상태로 그리기 전에 보드를 지운다.
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  board.piece.draw();
+  rAFId = requestAnimationFrame(animate);
+}
 
 function play(): void {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   board.reset();
+
+  if (rAFId) {
+    cancelAnimationFrame(rAFId);
+  }
+
+  animate();
 }
 
 function movePiece(piece: Piece): void {

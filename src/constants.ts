@@ -9,7 +9,6 @@ export const KEY_CODES = Object.freeze({
   DOWN: 40,
 });
 export const SHAPES: number[][][] = [
-  [],
   [
     [0, 0, 0, 0],
     [1, 1, 1, 1],

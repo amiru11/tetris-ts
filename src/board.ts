@@ -65,6 +65,7 @@ export class Board {
        * 새로운 piece 나오도록 하기
        */
       this.freeze();
+      this.clearLines();
       this.piece = this.nextPiece;
       this.piece.ctx = this.ctx;
       this.piece.setStartingPosition();
@@ -73,6 +74,7 @@ export class Board {
     return true;
   }
 
+  // 테트리스 조각을 보드에 고정시키기
   freeze() {
     this.piece.shape.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -83,6 +85,7 @@ export class Board {
     });
   }
 
+  // 조각을 고정할 때 보드를 갱신
   drawBoard() {
     this.grid.forEach((row, y) => {
       row.forEach((value, x) => {
@@ -94,11 +97,13 @@ export class Board {
     });
   }
 
+  // 보드와 테트리스 조각을 그려준다
   draw() {
     this.piece.draw();
     this.drawBoard();
   }
 
+  // 테트리스 조각 유효성 검사
   valid(piece: Piece): boolean {
     return piece.shape.every((row, dy) => {
       return row.every((value, dx) => {
@@ -109,6 +114,7 @@ export class Board {
     });
   }
 
+  // 테트리스 조각 회전시키기
   rotate(piece: Piece): Piece {
     let clone = JSON.parse(JSON.stringify(piece));
     // swap the symmetric elements
@@ -121,5 +127,18 @@ export class Board {
     }
     clone.shape.forEach((row) => row.reverse());
     return clone;
+  }
+
+  // 라인 클리어
+  clearLines(): void {
+    this.grid.forEach((row, y) => {
+      // 모든 값이 0보다 큰지 비교한다.
+      if (row.every((value) => value > 0)) {
+        // 행을 삭제한다.
+        this.grid.splice(y, 1);
+        // 맨 위에 0으로 채워진 행을 추가한다.
+        this.grid.unshift(Array(COLS).fill(0));
+      }
+    });
   }
 }
